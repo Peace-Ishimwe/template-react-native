@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, StatusBar } from "react-native";
 import { Link, useRouter } from "expo-router";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
@@ -26,6 +26,7 @@ export default function LoginScreen() {
 
   return (
     <View className="flex-1 bg-gray-900 p-6 justify-center">
+      <StatusBar />
       <Text className="text-white text-3xl font-bold text-center mb-8">
         Welcome Back
       </Text>
