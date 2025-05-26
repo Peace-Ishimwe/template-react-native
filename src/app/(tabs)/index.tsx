@@ -1,13 +1,28 @@
-import { View, Text  } from '@/src/components/Themed';
+import React from 'react';
+import { View, Text, Alert } from 'react-native';
+import { ProtectedRoute } from '@/src/components/ProtectedRoute';
+import { Button } from '@/src/components/Button';
+import { useAuth } from '@/src/contexts/AuthContext';
 
-import EditScreenInfo from '@/src/components/EditScreenInfo';
+export default function HomeScreen() {
+  const { user, logout } = useAuth();
 
-export default function TabOneScreen() {
+  const handleLogout = async () => {
+    try {
+      await logout();
+      Alert.alert('Success', 'Logged out successfully!');
+    } catch (error) {
+      Alert.alert('Error', 'Failed to log out');
+    }
+  };
+
   return (
-    <View className="flex flex-1 items-center justify-center">
-      <Text className="text-xl font-bold">Tab One</Text>
-      <View className="my-7 h-[1px] w-[80%] bg-black/10"/>
-      <EditScreenInfo path="src/app/(tabs)/index.tsx" />
-    </View>
+    <ProtectedRoute>
+      <View className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 p-6 justify-center items-center">
+        <Text className="text-white text-3xl font-bold mb-4">Welcome, {user?.name}!</Text>
+        <Text className="text-white text-lg mb-8">You are now logged in.</Text>
+        <Button title="Logout" onPress={handleLogout} />
+      </View>
+    </ProtectedRoute>
   );
 }
