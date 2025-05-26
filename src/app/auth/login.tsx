@@ -1,30 +1,34 @@
-import React, { useState } from 'react';
-import { View, Text, Alert } from 'react-native';
-import { Link } from 'expo-router';
-import { Input } from '../../components/Input';
-import { Button } from '../../components/Button';
-import { useAuth } from '../../contexts/AuthContext';
-import { LoginCredentials } from '../../types/user';
+import React, { useState } from "react";
+import { View, Text, Alert } from "react-native";
+import { Link, useRouter } from "expo-router";
+import { Input } from "../../components/Input";
+import { Button } from "../../components/Button";
+import { useAuth } from "../../contexts/AuthContext";
+import { LoginCredentials } from "../../types/user";
 
 export default function LoginScreen() {
   const [credentials, setCredentials] = useState<LoginCredentials>({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
   const { login } = useAuth();
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
       await login(credentials);
-      Alert.alert('Success', 'Logged in successfully!');
+      Alert.alert("Success", "Logged in successfully!");
+      router.push("/(tabs)");
     } catch (error: any) {
-      Alert.alert('Error', error.message || 'Invalid email or password');
+      Alert.alert("Error", error.message || "Invalid email or password");
     }
   };
 
   return (
-    <View className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 p-6 justify-center">
-      <Text className="text-white text-3xl font-bold text-center mb-8">Welcome Back</Text>
+    <View className="flex-1 bg-gray-900 p-6 justify-center">
+      <Text className="text-white text-3xl font-bold text-center mb-8">
+        Welcome Back
+      </Text>
       <Input
         label="Email"
         value={credentials.email}
@@ -34,14 +38,16 @@ export default function LoginScreen() {
       <Input
         label="Password"
         value={credentials.password}
-        onChangeText={(text) => setCredentials({ ...credentials, password: text })}
+        onChangeText={(text) =>
+          setCredentials({ ...credentials, password: text })
+        }
         placeholder="Enter your password"
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
       <Link
         href={{
-          pathname: '/auth/signup',
+          pathname: "/auth/signup",
         }}
         asChild
       >

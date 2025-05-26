@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User, LoginCredentials, SignupCredentials } from '../types/user';
 
-const API_URL = 'http://localhost:3000'; // Replace with your json-server URL
+const API_URL = 'http://localhost:3000';
 
 export const loginUser = async (credentials: LoginCredentials): Promise<User | null> => {
   try {

@@ -5,7 +5,6 @@ import { Pressable } from 'react-native';
 
 import Colors from '@/src/constants/Colors';
 import { useColorScheme } from '@/src/components/useColorScheme';
-import { useClientOnlyValue } from '@/src/components/useClientOnlyValue';
 import { cn } from '@/src/utils/cn';
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -22,10 +21,7 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
+        headerShown: false,
       }}>
       <Tabs.Screen
         name="index"

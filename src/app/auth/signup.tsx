@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, Alert } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Input } from '../../components/Input';
 import { Button } from '../../components/Button';
 import { signupUser } from '../../services/api';
@@ -13,17 +13,20 @@ export default function SignupScreen() {
     password: '',
   });
 
+  const router = useRouter();
+
   const handleSignup = async () => {
     const user = await signupUser(credentials);
     if (user) {
       Alert.alert('Success', 'Account created successfully!');
+      router.push("/(tabs)");
     } else {
       Alert.alert('Error', 'Failed to create account');
     }
   };
 
   return (
-    <View className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 p-6 justify-center">
+    <View className="flex-1 bg-gray-900 p-6 justify-center">
       <Text className="text-white text-3xl font-bold text-center mb-8">Create Account</Text>
       <Input
         label="Name"

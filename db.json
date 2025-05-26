@@ -1,3 +1,10 @@
 {
-  "users": []
+  "users": [
+    {
+      "id": "g425ws3mp",
+      "name": "Peace Ishimwe",
+      "email": "peaceishimwem@gmail.com",
+      "password": "prop1@23"
+    }
+  ]
 }
