@@ -39,7 +39,7 @@ export default function HomeScreen() {
     (sum, expense) => sum + parseFloat(expense.amount),
     0
   );
-  const monthlyBudget = 2000; // Configurable budget
+  const monthlyBudget = 10000;
   const budgetStatus =
     totalExpenses <= monthlyBudget ? "On Track" : "Over Budget";
   const budgetColor = totalExpenses <= monthlyBudget ? "#22C55E" : "#EF4444";

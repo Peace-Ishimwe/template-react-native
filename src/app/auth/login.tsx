@@ -32,18 +32,13 @@ export default function LoginScreen() {
       password: '',
     };
 
-    // Username: Required, 4-20 chars, alphanumeric with underscores/hyphens
     if (!credentials.username) {
       newErrors.username = 'Username is required';
       isValid = false;
-    } else if (!/^[a-zA-Z0-9_-]{4,20}$/.test(credentials.username)) {
-      newErrors.username = 'Username must be 4-20 characters, alphanumeric with underscores or hyphens';
-      isValid = false;
     }
 
-    // Password: Optional (since API uses username-only), 6-12 chars if provided
-    if (credentials.password && !/^[a-zA-Z0-9!@#$%^&*]{6,12}$/.test(credentials.password)) {
-      newErrors.password = 'Password must be 6-12 characters, alphanumeric with special characters';
+    if (!credentials.password ) {
+      newErrors.password = 'Password is required';
       isValid = false;
     }
     
