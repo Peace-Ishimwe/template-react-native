@@ -1,159 +1,153 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Alert, StatusBar, Image, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { View, Text, StatusBar, ScrollView, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/src/contexts/AuthContext';
-import { Input } from '@/src/components/Input';
 import { Button } from '@/src/components/Button';
 import { cn } from '@/src/utils/cn';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { updateUser } from '@/src/services/api';
-import { User } from '@/src/types';
+import { getExpenses } from '@/src/services/api';
+import { Expense } from '@/src/types';
+import { Alert } from 'react-native';
 
 export default function ProfileScreen() {
-  const { user, login, logout } = useAuth();
-  const [credentials, setCredentials] = useState<{
-    username: string;
-    currentPassword: string;
-    newPassword: string;
-  }>({
-    username: '',
-    currentPassword: '',
-    newPassword: '',
+  const { user, logout } = useAuth();
+
+  const { data: expenses = [], isLoading, error } = useQuery({
+    queryKey: ['expenses', user?.id],
+    queryFn: () => getExpenses(),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      setCredentials({
-        username: user.username || '',
-        currentPassword: '',
-        newPassword: '',
-      });
-    }
-  }, [user]);
-
-  const handleUpdate = async () => {
-    if (!isEditing) {
-      setIsEditing(true);
-      return;
-    }
-
-    if (!credentials.username) {
-      Alert.alert('Error', 'Username is required');
-      return;
-    }
-
-    if (credentials.currentPassword || credentials.newPassword) {
-      if (!credentials.currentPassword || !credentials.newPassword) {
-        Alert.alert('Error', 'Please provide both current and new passwords');
-        return;
-      }
-      if (credentials.currentPassword !== user?.password) {
-        Alert.alert('Error', 'Current password is incorrect');
-        return;
-      }
-      if (credentials.newPassword.length < 6) {
-        Alert.alert('Error', 'New password must be at least 6 characters');
-        return;
-      }
-    }
-
-    setLoading(true);
-    try {
-      const updatedUser = await updateUser(user!.id, {
-        username: credentials.username,
-        password: credentials.newPassword || user!.password,
-      });
-      await login({ username: credentials.username, password: credentials.newPassword || user!.password });
-      Alert.alert('Success', 'Profile updated successfully!');
-      setIsEditing(false);
-      setCredentials({ ...credentials, currentPassword: '', newPassword: '' });
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to update profile');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLogout = async () => {
-    setLoading(true);
     try {
       await logout();
       Alert.alert('Success', 'Logged out successfully!');
     } catch (error: any) {
       Alert.alert('Error', error.message || 'Failed to logout');
-    } finally {
-      setLoading(false);
     }
   };
 
+  // Calculate financial insights
+  const totalExpenses = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+  const expenseCount = expenses.length;
+  const favoriteCategory = expenses.reduce((acc, expense) => {
+    const category = expense.category || 'Other';
+    acc[category] = (acc[category] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  const topCategory = Object.entries(favoriteCategory).sort((a, b) => b[1] - a[1])[0]?.[0] || 'None';
+
+  // Placeholder join date (since user schema doesn't include it)
+  const joinDate = new Date().toLocaleDateString(); 
+
   if (!user) {
     return (
-      <View className="flex-1 bg-gray-100 justify-center items-center">
-        <StatusBar barStyle="dark-content" />
-        <Text className="text-gray-600 text-base text-center">Please log in to view your profile</Text>
+      <View className="flex-1 bg-gray-900 justify-center items-center">
+        <StatusBar barStyle="light-content" />
+        <Text className="text-white text-base text-center">Please log in to view your profile</Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-100">
-      <StatusBar barStyle="dark-content" />
-      <View className="h-1/4 bg-blue-500 rounded-b-3xl justify-center items-center">
-        <TouchableOpacity className="mb-2">
-          <View className="w-20 h-20 bg-gray-300 rounded-full justify-center items-center">
-            <FontAwesome name="user" size={40} color="#fff" />
+    <View className="flex-1 bg-gray-900">
+      <StatusBar barStyle="light-content" />
+      {/* Gradient Header */}
+      <LinearGradient
+        colors={['#3B82F6', '#1E3A8A']}
+        className="h-1/3 rounded-b-3xl justify-center items-center"
+      >
+        <Animated.View entering={FadeInUp.duration(500)} className="flex flex-col items-center">
+          <View className="w-24 h-24 bg-gray-200 rounded-full justify-center items-center mb-4">
+            <FontAwesome name="user" size={48} color="#3B82F6" />
           </View>
-          {isEditing && (
-            <Text className="text-white text-sm mt-1">Tap to change picture</Text>
-          )}
-        </TouchableOpacity>
-        <Text className="text-white text-2xl font-bold">Your Profile</Text>
-      </View>
-      <View className="flex-1 px-6 -mt-8">
-        <View className="bg-white rounded-xl p-4 shadow-sm">
-          <Input
-            label="Username"
-            value={credentials.username}
-            onChangeText={(text) => setCredentials({ ...credentials, username: text })}
-            placeholder="Enter your username"
-            editable={isEditing}
-            className={cn(isEditing ? 'focus:border-blue-400' : 'opacity-70', 'text-base')}
-          />
-          {isEditing && (
-            <>
-              <Input
-                label="Current Password"
-                value={credentials.currentPassword}
-                onChangeText={(text) => setCredentials({ ...credentials, currentPassword: text })}
-                placeholder="Enter current password"
-                secureTextEntry
-                className={cn('text-base')}
-              />
-              <Input
-                label="New Password"
-                value={credentials.newPassword}
-                onChangeText={(text) => setCredentials({ ...credentials, newPassword: text })}
-                placeholder="Enter new password"
-                secureTextEntry
-                className={cn('text-base')}
-              />
-            </>
-          )}
-          <Button
-            title={isEditing ? 'Save Changes' : 'Edit Profile'}
-            onPress={handleUpdate}
-            disabled={loading}
-            className={cn('transition-all duration-200 active:scale-95', loading && 'opacity-50')}
-          />
-          <Button
-            title="Logout"
-            onPress={handleLogout}
-            disabled={loading}
-            className={cn('bg-gray-500 mt-2', loading && 'opacity-50')}
-          />
-        </View>
-      </View>
+          <Text className="text-white text-2xl font-bold">{user.username || 'User'}</Text>
+          <Text className="text-white text-sm opacity-80">Your Financial Profile</Text>
+        </Animated.View>
+      </LinearGradient>
+
+      {/* Main Content */}
+      <Animated.View
+        entering={FadeInDown.duration(600).delay(200)}
+        className="flex-1 px-6 -mt-8"
+      >
+        <ScrollView>
+          {/* Profile Details Card */}
+          <Animated.View
+            entering={FadeInDown.duration(600).delay(400)}
+            className="bg-white rounded-xl p-6 shadow-md mb-6"
+          >
+            <Text className="text-gray-800 text-lg font-semibold mb-4">Profile Details</Text>
+            <View className="mb-4">
+              <Text className="text-gray-600 text-sm">Username</Text>
+              <Text className="text-gray-800 text-base">{user.username}</Text>
+            </View>
+            <View className="mb-4">
+              <Text className="text-gray-600 text-sm">Email</Text>
+              <Text className="text-gray-800 text-base">{user.username}</Text>
+            </View>
+            <View className="mb-4">
+              <Text className="text-gray-600 text-sm">Joined</Text>
+              <Text className="text-gray-800 text-base">{joinDate}</Text>
+            </View>
+          </Animated.View>
+
+          {/* Financial Insights Card */}
+          <Animated.View
+            entering={FadeInDown.duration(600).delay(600)}
+            className="bg-white rounded-xl p-6 shadow-md mb-6"
+          >
+            <Text className="text-gray-800 text-lg font-semibold mb-4">Financial Insights</Text>
+            {isLoading ? (
+              <Text className="text-gray-500 text-sm">Loading insights...</Text>
+            ) : error ? (
+              <Text className="text-gray-500 text-sm">Error loading insights.</Text>
+            ) : (
+              <>
+                <View className="mb-4 flex-row justify-between">
+                  <View>
+                    <Text className="text-gray-600 text-sm">Total Expenses</Text>
+                    <Text className="text-blue-500 text-base font-semibold">${totalExpenses.toFixed(2)}</Text>
+                  </View>
+                  <FontAwesome name="dollar" size={20} color="#3B82F6" />
+                </View>
+                <View className="mb-4 flex-row justify-between">
+                  <View>
+                    <Text className="text-gray-600 text-sm">Number of Expenses</Text>
+                    <Text className="text-blue-500 text-base font-semibold">{expenseCount}</Text>
+                  </View>
+                  <FontAwesome name="list" size={20} color="#3B82F6" />
+                </View>
+                <View className="mb-4 flex-row justify-between">
+                  <View>
+                    <Text className="text-gray-600 text-sm">Favorite Category</Text>
+                    <Text className="text-blue-500 text-base font-semibold">{topCategory}</Text>
+                  </View>
+                  <FontAwesome name="tag" size={20} color="#3B82F6" />
+                </View>
+              </>
+            )}
+          </Animated.View>
+
+          {/* Logout Button */}
+          <Animated.View
+            entering={FadeInDown.duration(600).delay(800)}
+            className="mb-6"
+          >
+            <Button
+              title="Logout"
+              onPress={handleLogout}
+              className={cn(
+                'bg-red-500',
+                'transition-all duration-200 active:scale-95'
+              )}
+            />
+          </Animated.View>
+        </ScrollView>
+      </Animated.View>
     </View>
   );
 }

@@ -113,7 +113,7 @@ export default function ExpensesScreen() {
       
       <LinearGradient
         colors={['#3B82F6', '#1E3A8A']}
-        className="h-1/4 rounded-b-3xl justify-center items-center p-4"
+        className="h-1/5 rounded-b-3xl justify-center items-center p-4"
       >
         <Animated.Text
           entering={FadeInUp.duration(300)}
