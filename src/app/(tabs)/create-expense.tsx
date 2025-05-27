@@ -71,6 +71,15 @@ export default function CreateExpenseScreen() {
       title: expense.title || undefined,
       note: expense.note || undefined,
     });
+    setExpense({
+      name: '',
+      amount: '',
+      description: '',
+      category: '',
+      date: '',
+      title: '',
+      note: '',
+    });
   };
 
   return (
