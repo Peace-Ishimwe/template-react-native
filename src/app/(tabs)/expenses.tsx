@@ -19,7 +19,7 @@ export default function ExpensesScreen() {
       setIsLoading(true);
       try {
         const data = await getExpenses();
-        setExpenses(data);
+        setExpenses(data.filter(expense => expense.userId === user.id));
       } catch (error) {
         console.error('Error fetching expenses:', error);
       } finally {
