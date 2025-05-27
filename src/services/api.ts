@@ -48,7 +48,7 @@ export const createExpense = async (expense: Omit<Expense, 'id' | 'createdAt'>):
 
 export const getExpenses = async (): Promise<Expense[]> => {
   const user = await getStoredUser();
-  const response = await api.get<Expense[]>(`/users/${user?.id}/expenses`);
+  const response = await api.get<Expense[]>(`/expenses`);
   return response.data;
 };
 
