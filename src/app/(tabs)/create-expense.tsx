@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Alert, ScrollView, StatusBar } from 'react-native';
+import { View, Text, Alert, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
@@ -11,6 +11,7 @@ import { createExpense } from '@/src/services/api';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useAuth } from '@/src/contexts/AuthContext';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function CreateExpenseScreen() {
   const [expense, setExpense] = useState({
@@ -71,15 +72,6 @@ export default function CreateExpenseScreen() {
       title: expense.title || undefined,
       note: expense.note || undefined,
     });
-    setExpense({
-      name: '',
-      amount: '',
-      description: '',
-      category: '',
-      date: '',
-      title: '',
-      note: '',
-    });
   };
 
   return (
@@ -97,11 +89,17 @@ export default function CreateExpenseScreen() {
         </Animated.Text>
       </LinearGradient>
 
-      <Animated.View
-        entering={FadeInDown.duration(300).delay(200)}
-        className="flex-1 px-6 -mt-8 pb-6"
-      >
-        <ScrollView className="bg-white rounded-xl p-6 shadow-md">
+      <Animated.View className="flex-1 px-6 -mt-8 pb-4">
+        <KeyboardAwareScrollView
+          className="bg-white rounded-xl p-6 shadow-md"
+          contentContainerStyle={{ 
+            flexGrow: 1,
+            paddingBottom: 20
+          }}
+          enableOnAndroid={true}
+          extraScrollHeight={30}
+          keyboardShouldPersistTaps="handled"
+        >
           <Input
             label="Name"
             value={expense.name}
@@ -183,7 +181,7 @@ export default function CreateExpenseScreen() {
               mutation.isPending && 'opacity-50'
             )}
           />
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </Animated.View>
     </View>
   );
