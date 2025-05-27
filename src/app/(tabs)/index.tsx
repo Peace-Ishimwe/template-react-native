@@ -18,9 +18,9 @@ export default function HomeScreen() {
 
   return (
     <ProtectedRoute>
-      <View className="flex-1 bg-gray-900 p-6 justify-center items-center">
-        <Text className="text-white text-3xl font-bold mb-4">Welcome, {user?.name}!</Text>
-        <Text className="text-white text-lg mb-8">You are now logged in.</Text>
+      <View className="flex-1 bg-gray-100 p-6 justify-center items-center">
+        <Text className="text-3xl font-bold mb-4">Welcome, {user?.name}!</Text>
+        <Text className="text-lg mb-8">You are now logged in.</Text>
         <Button title="Logout" onPress={handleLogout} />
       </View>
     </ProtectedRoute>

@@ -50,9 +50,9 @@ function RootLayoutNav() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <Stack screenOptions={{ headerShown: false }}>
+        <Stack initialRouteName="(tabs)" screenOptions={{ headerShown: false }}>
           <Stack.Screen name="auth" />
-          <Stack.Screen name="index" />
+          <Stack.Screen name="(tabs)" />
         </Stack>
       </AuthProvider>
     </SafeAreaProvider>

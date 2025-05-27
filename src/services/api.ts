@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User, LoginCredentials, SignupCredentials } from '../types/user';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = 'http://10.12.75.34:3000';
 
 export const loginUser = async (credentials: LoginCredentials): Promise<User | null> => {
   try {
@@ -27,10 +27,29 @@ export const signupUser = async (credentials: SignupCredentials): Promise<User |
       id: Math.random().toString(36).substr(2, 9),
     });
     const user = response.data;
-    await AsyncStorage.setItem('user', JSON.stringify(user));
+    if (user) {
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+    }
     return user;
   } catch (error) {
     console.error('Signup error:', error);
+    return null;
+  }
+};
+
+export const updateUser = async (userId: string, credentials: SignupCredentials): Promise<User | null> => {
+  try {
+    const response = await axios.put(`${API_URL}/users/${userId}`, {
+      ...credentials,
+      id: userId,
+    });
+    const user = response.data;
+    if (user) {
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+    }
+    return user;
+  } catch (error) {
+    console.error('Update user error:', error);
     return null;
   }
 };
