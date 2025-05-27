@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { View, Text, Alert, StatusBar } from 'react-native';
-import { useRouter } from 'expo-router';
 import { Input } from '@/src/components/Input';
 import { Button } from '@/src/components/Button';
-import { loginUser } from '@/src/services/api';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function LoginScreen() {
   const [credentials, setCredentials] = useState<{ username: string; password: string }>({
     username: '',
     password: '',
   });
-  const router = useRouter();
+  const { login } = useAuth()
 
   const handleLogin = async () => {
     if (!credentials.username || !credentials.password) {
@@ -19,15 +18,7 @@ export default function LoginScreen() {
     }
 
     try {
-      const users = await loginUser(credentials.username);
-      const user = users[0];
-
-      if (user && user.password === credentials.password) {
-        Alert.alert('Success', 'Logged in successfully!');
-        router.replace('/(tabs)');
-      } else {
-        Alert.alert('Error', 'Invalid username or password');
-      }
+     await login(credentials);
     } catch (error) {
       Alert.alert('Error', 'Failed to login. Please try again.');
     }

@@ -17,7 +17,7 @@ export const TabBarIcon: React.FC<TabBarIconProps> = ({
   return (
     <View
       className={cn(
-        "items-center justify-center transition-all mb-1 duration-300",
+        "items-center justify-center transition-all duration-300",
         focused && "scale-110"
       )}
     >

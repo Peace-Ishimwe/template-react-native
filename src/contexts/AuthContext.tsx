@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { loginUser, getStoredUser, logoutUser } from '@/src/services/api';
 import { User } from '@/src/types';
+import { Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 
 interface LoginCredentials {
   username: string;
@@ -9,6 +11,7 @@ interface LoginCredentials {
 
 interface AuthContextType {
   user: User | null;
+  loading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -18,6 +21,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter()
 
   useEffect(() => {
     const loadUser = async () => {
@@ -44,6 +48,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     if (user && user.password === password) {
       setUser(user);
+      router.push("/(tabs)")
     } else {
       throw new Error('Invalid username or password');
     }
@@ -55,11 +60,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   if (loading) {
-    return null; // Or replace with a loading spinner component
+    return (
+      <View className='flex min-h-screen items-center justify-center'>
+        <Text className='text-blue-500'>Loading...</Text>
+      </View>
+    );
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
