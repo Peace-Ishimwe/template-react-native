@@ -94,7 +94,7 @@ export default function CreateExpenseScreen() {
           className="bg-white rounded-xl p-6 shadow-md"
           contentContainerStyle={{ 
             flexGrow: 1,
-            paddingBottom: 20
+            paddingBottom: 40
           }}
           enableOnAndroid={true}
           extraScrollHeight={30}
