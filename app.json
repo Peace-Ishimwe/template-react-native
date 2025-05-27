@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "template-react-native",
-    "slug": "template-react-native",
+    "name": "Personal Finance Tracker",
+    "slug": "Personal Finance Tracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",

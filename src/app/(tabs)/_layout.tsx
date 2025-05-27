@@ -14,33 +14,31 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: "rgba(255, 255, 255, 0.95)",
+            backgroundColor: "#121212",
             borderTopWidth: 0,
-            elevation: 10,
+            elevation: 8,
             shadowColor: "#000",
             shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
+            shadowOpacity: 0.15,
+            shadowRadius: 8,
             height: 70,
-            paddingBottom: 10,
-            borderTopLeftRadius: 20,
-            borderTopRightRadius: 20,
+            paddingBottom: 10
           },
           tabBarBackground: () => (
             <LinearGradient
-              colors={["rgba(255, 255, 255, 0.9)", "rgba(240, 240, 245, 0.95)"]}
+              colors={["rgba(18, 18, 18, 0.95)", "rgba(30, 30, 30, 0.95)"]}
               style={{
                 flex: 1,
-                borderTopLeftRadius: 20,
-                borderTopRightRadius: 20,
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
               }}
             />
           ),
-          tabBarActiveTintColor: "#3B82F6",
-          tabBarInactiveTintColor: "#9CA3AF",
+          tabBarActiveTintColor: "#1DB954",
+          tabBarInactiveTintColor: "#B3B3B3",
           tabBarLabelStyle: {
             fontSize: 12,
-            fontWeight: "600",
+            fontFamily: "CircularStd-Medium",
             marginBottom: 5,
           },
         }}
@@ -50,7 +48,7 @@ export default function TabLayout() {
           options={{
             title: "Home",
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name="home" color={color} focused={focused} />
+              <TabBarIcon name="home" color={color} focused={focused} size={24} />
             ),
             headerRight: () => (
               <Link href="/modal" asChild>
@@ -58,8 +56,8 @@ export default function TabLayout() {
                   {({ pressed }) => (
                     <FontAwesome
                       name="info-circle"
-                      size={25}
-                      color="#3B82F6"
+                      size={24}
+                      color="#1DB954"
                       className={cn(
                         "mr-4",
                         pressed && "opacity-50",
@@ -77,7 +75,7 @@ export default function TabLayout() {
           options={{
             title: "Expenses",
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name="list" color={color} focused={focused} />
+              <TabBarIcon name="list" color={color} focused={focused} size={24} />
             ),
           }}
         />
@@ -86,7 +84,7 @@ export default function TabLayout() {
           options={{
             title: "Add Expense",
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name="plus" color={color} focused={focused} />
+              <TabBarIcon name="plus" color={color} focused={focused} size={24} />
             ),
           }}
         />
@@ -95,7 +93,7 @@ export default function TabLayout() {
           options={{
             title: "Profile",
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name="user" color={color} focused={focused} />
+              <TabBarIcon name="user" color={color} focused={focused} size={24} />
             ),
           }}
         />

@@ -5,7 +5,6 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/src/contexts/AuthContext';
-import { Button } from '@/src/components/Button';
 import { cn } from '@/src/utils/cn';
 import { getExpenses } from '@/src/services/api';
 import { Expense } from '@/src/types';
@@ -45,88 +44,128 @@ export default function ProfileScreen() {
 
   if (!user) {
     return (
-      <View className="flex-1 bg-gray-900 justify-center items-center">
-        <StatusBar barStyle="light-content" />
-        <Text className="text-white text-base text-center">Please log in to view your profile</Text>
+      <View className="flex-1 bg-[#121212] justify-center items-center">
+        <StatusBar barStyle="light-content" backgroundColor="#121212" />
+        <Text className="text-white text-base text-center" style={{ fontFamily: 'CircularStd-Book' }}>
+          Please log in to view your profile
+        </Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" />
+    <View className="flex-1 bg-[#121212]">
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
       {/* Gradient Header */}
       <LinearGradient
-        colors={['#3B82F6', '#1E3A8A']}
-        className="h-1/3 rounded-b-3xl justify-center items-center"
+        colors={['#1DB954', '#121212']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="h-1/3 justify-center items-center"
       >
-        <Animated.View entering={FadeInUp.duration(500)} className="flex flex-col items-center">
-          <View className="w-24 h-24 bg-gray-200 rounded-full justify-center items-center mb-4">
-            <FontAwesome name="user" size={48} color="#3B82F6" />
+        <Animated.View entering={FadeInUp.duration(400)} className="flex flex-col items-center">
+          <View className="w-24 h-24 bg-[#2A2A2A] rounded-full justify-center items-center mb-4">
+            <FontAwesome name="user" size={48} color="#1DB954" />
           </View>
-          <Text className="text-white text-2xl font-bold">{user.username || 'User'}</Text>
-          <Text className="text-white text-sm opacity-80">Your Financial Profile</Text>
+          <Text className="text-white text-3xl font-bold" style={{ fontFamily: 'CircularStd-Black' }}>
+            {user.username || 'User'}
+          </Text>
+          <Text className="text-[#B3B3B3] text-sm opacity-80" style={{ fontFamily: 'CircularStd-Book' }}>
+            Your Financial Profile
+          </Text>
         </Animated.View>
       </LinearGradient>
 
       {/* Main Content */}
       <Animated.View
-        entering={FadeInDown.duration(600).delay(200)}
+        entering={FadeInDown.duration(400).delay(200)}
         className="flex-1 px-6 -mt-8"
       >
-        <ScrollView>
+        <ScrollView contentContainerStyle={{ paddingBottom: 80 }}>
           {/* Profile Details Card */}
           <Animated.View
-            entering={FadeInDown.duration(600).delay(400)}
-            className="bg-white rounded-xl p-6 shadow-md mb-6"
+            entering={FadeInDown.duration(400).delay(400)}
+            className="bg-[#1E1E1E] rounded-2xl p-6 shadow-md mb-6"
           >
-            <Text className="text-gray-800 text-lg font-semibold mb-4">Profile Details</Text>
+            <Text className="text-white text-lg font-semibold mb-4" style={{ fontFamily: 'CircularStd-Medium' }}>
+              Profile Details
+            </Text>
             <View className="mb-4">
-              <Text className="text-gray-600 text-sm">Username</Text>
-              <Text className="text-gray-800 text-base">{user.username}</Text>
+              <Text className="text-[#B3B3B3] text-sm" style={{ fontFamily: 'CircularStd-Book' }}>
+                Username
+              </Text>
+              <Text className="text-white text-base" style={{ fontFamily: 'CircularStd-Medium' }}>
+                {user.username}
+              </Text>
             </View>
             <View className="mb-4">
-              <Text className="text-gray-600 text-sm">Email</Text>
-              <Text className="text-gray-800 text-base">{user.username}</Text>
+              <Text className="text-[#B3B3B3] text-sm" style={{ fontFamily: 'CircularStd-Book' }}>
+                Email
+              </Text>
+              <Text className="text-white text-base" style={{ fontFamily: 'CircularStd-Medium' }}>
+                {user.username}
+              </Text>
             </View>
             <View className="mb-4">
-              <Text className="text-gray-600 text-sm">Joined</Text>
-              <Text className="text-gray-800 text-base">{joinDate}</Text>
+              <Text className="text-[#B3B3B3] text-sm" style={{ fontFamily: 'CircularStd-Book' }}>
+                Joined
+              </Text>
+              <Text className="text-white text-base" style={{ fontFamily: 'CircularStd-Medium' }}>
+                {joinDate}
+              </Text>
             </View>
           </Animated.View>
 
           {/* Financial Insights Card */}
           <Animated.View
-            entering={FadeInDown.duration(600).delay(600)}
-            className="bg-white rounded-xl p-6 shadow-md mb-6"
+            entering={FadeInDown.duration(400).delay(600)}
+            className="bg-[#1E1E1E] rounded-2xl p-6 shadow-md mb-6"
           >
-            <Text className="text-gray-800 text-lg font-semibold mb-4">Financial Insights</Text>
+            <Text className="text-white text-lg font-semibold mb-4" style={{ fontFamily: 'CircularStd-Medium' }}>
+              Financial Insights
+            </Text>
             {isLoading ? (
-              <Text className="text-gray-500 text-sm">Loading insights...</Text>
+              <Text className="text-[#B3B3B3] text-sm" style={{ fontFamily: 'CircularStd-Book' }}>
+                Loading insights...
+              </Text>
             ) : error ? (
-              <Text className="text-gray-500 text-sm">Error loading insights.</Text>
+              <Text className="text-[#B3B3B3] text-sm" style={{ fontFamily: 'CircularStd-Book' }}>
+                Error loading insights.
+              </Text>
             ) : (
               <>
-                <View className="mb-4 flex-row justify-between">
+                <View className="mb-4 flex-row justify-between items-center">
                   <View>
-                    <Text className="text-gray-600 text-sm">Total Expenses</Text>
-                    <Text className="text-blue-500 text-base font-semibold">${totalExpenses.toFixed(2)}</Text>
+                    <Text className="text-[#B3B3B3] text-sm" style={{ fontFamily: 'CircularStd-Book' }}>
+                      Total Expenses
+                    </Text>
+                    <Text className="text-[#1DB954] text-base font-semibold" style={{ fontFamily: 'CircularStd-Medium' }}>
+                      ${totalExpenses.toFixed(2)}
+                    </Text>
                   </View>
-                  <FontAwesome name="dollar" size={20} color="#3B82F6" />
+                  <FontAwesome name="dollar" size={20} color="#1DB954" />
                 </View>
-                <View className="mb-4 flex-row justify-between">
+                <View className="mb-4 flex-row justify-between items-center">
                   <View>
-                    <Text className="text-gray-600 text-sm">Number of Expenses</Text>
-                    <Text className="text-blue-500 text-base font-semibold">{expenseCount}</Text>
+                    <Text className="text-[#B3B3B3] text-sm" style={{ fontFamily: 'CircularStd-Book' }}>
+                      Number of Expenses
+                    </Text>
+                    <Text className="text-[#1DB954] text-base font-semibold" style={{ fontFamily: 'CircularStd-Medium' }}>
+                      {expenseCount}
+                    </Text>
                   </View>
-                  <FontAwesome name="list" size={20} color="#3B82F6" />
+                  <FontAwesome name="list" size={20} color="#1DB954" />
                 </View>
-                <View className="mb-4 flex-row justify-between">
+                <View className="mb-4 flex-row justify-between items-center">
                   <View>
-                    <Text className="text-gray-600 text-sm">Favorite Category</Text>
-                    <Text className="text-blue-500 text-base font-semibold">{topCategory}</Text>
+                    <Text className="text-[#B3B3B3] text-sm" style={{ fontFamily: 'CircularStd-Book' }}>
+                      Favorite Category
+                    </Text>
+                    <Text className="text-[#1DB954] text-base font-semibold" style={{ fontFamily: 'CircularStd-Medium' }}>
+                      {topCategory}
+                    </Text>
                   </View>
-                  <FontAwesome name="tag" size={20} color="#3B82F6" />
+                  <FontAwesome name="tag" size={20} color="#1DB954" />
                 </View>
               </>
             )}
@@ -134,17 +173,20 @@ export default function ProfileScreen() {
 
           {/* Logout Button */}
           <Animated.View
-            entering={FadeInDown.duration(600).delay(800)}
+            entering={FadeInDown.duration(400).delay(800)}
             className="mb-6"
           >
-            <Button
-              title="Logout"
+            <TouchableOpacity
               onPress={handleLogout}
               className={cn(
-                'bg-red-500',
+                'bg-[#FF453A] rounded-full py-3',
                 'transition-all duration-200 active:scale-95'
               )}
-            />
+            >
+              <Text className="text-white text-center text-lg font-semibold" style={{ fontFamily: 'CircularStd-Medium' }}>
+                Logout
+              </Text>
+            </TouchableOpacity>
           </Animated.View>
         </ScrollView>
       </Animated.View>

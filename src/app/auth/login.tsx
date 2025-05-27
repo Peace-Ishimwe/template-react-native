@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, Alert, StatusBar } from 'react-native';
+import { View, Text, Alert, StatusBar, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { Input } from '@/src/components/Input';
@@ -37,7 +37,7 @@ export default function LoginScreen() {
       isValid = false;
     }
 
-    if (!credentials.password ) {
+    if (!credentials.password) {
       newErrors.password = 'Password is required';
       isValid = false;
     }
@@ -61,22 +61,25 @@ export default function LoginScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" />
+    <View className="flex-1 bg-[#121212]">
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
       <LinearGradient
-        colors={['#3B82F6', '#1E3A8A']}
-        className="h-1/5 rounded-b-3xl justify-center items-center p-4"
+        colors={['#1DB954', '#121212']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="h-1/4 justify-center items-center p-4"
       >
         <Animated.Text
-          entering={FadeInUp.duration(300)}
-          className="text-white text-3xl font-bold text-center"
+          entering={FadeInUp.duration(400)}
+          className="text-white text-4xl font-bold text-center"
+          style={{ fontFamily: 'CircularStd-Black' }} // Assuming a custom font similar to Spotify's Circular
         >
-          Personal Finance Tracker
+          Finance Tracker
         </Animated.Text>
       </LinearGradient>
 
       <Animated.View
-        entering={FadeInDown.duration(300).delay(200)}
+        entering={FadeInDown.duration(400).delay(200)}
         className="flex-1 px-6 -mt-8"
       >
         <KeyboardAwareScrollView
@@ -89,39 +92,47 @@ export default function LoginScreen() {
           extraScrollHeight={30}
           keyboardShouldPersistTaps="handled"
         >
-          <View className="bg-white rounded-xl p-6 shadow-md">
-            <Text className="text-gray-800 text-2xl font-semibold text-center mb-6">
+          <View className="bg-[#1E1E1E] rounded-2xl p-6 shadow-md">
+            <Text className="text-white text-2xl font-semibold text-center mb-6" style={{ fontFamily: 'CircularStd-Medium' }}>
               Log In
             </Text>
-            <View>
+            <View className="mb-4">
               <Input
                 label="Username"
                 value={credentials.username}
                 onChangeText={(text) => setCredentials({ ...credentials, username: text })}
                 placeholder="Enter your username"
-                className={cn('text-base')}
+                placeholderTextColor="#B3B3B3"
+                className={cn('text-base text-white bg-[#2A2A2A] rounded-lg p-3')}
+                style={{ fontFamily: 'CircularStd-Book' }}
               />
-              {errors.username ? <Text className="text-red-500 text-xs mt-1">{errors.username}</Text> : null}
+              {errors.username ? <Text className="text-[#FF453A] text-xs mt-1">{errors.username}</Text> : null}
             </View>
-            <View>
+            <View className="mb-4">
               <Input
                 label="Password"
                 value={credentials.password}
                 onChangeText={(text) => setCredentials({ ...credentials, password: text })}
                 placeholder="Enter your password"
+                placeholderTextColor="#B3B3B3"
                 secureTextEntry
-                className={cn('text-base')}
+                className={cn('text-base text-white bg-[#2A2A2A] rounded-lg p-3')}
+                style={{ fontFamily: 'CircularStd-Book' }}
               />
-              {errors.password ? <Text className="text-red-500 text-xs mt-1">{errors.password}</Text> : null}
+              {errors.password ? <Text className="text-[#FF453A] text-xs mt-1">{errors.password}</Text> : null}
             </View>
-            <Button
-              title="Login"
+            <TouchableOpacity
               onPress={handleLogin}
+              activeOpacity={0.8}
               className={cn(
-                'bg-blue-500 mt-6',
+                'bg-[#1DB954] rounded-full py-3 mt-6',
                 'transition-all duration-200 active:scale-95'
               )}
-            />
+            >
+              <Text className="text-white text-center text-lg font-semibold" style={{ fontFamily: 'CircularStd-Medium' }}>
+                Login
+              </Text>
+            </TouchableOpacity>
           </View>
         </KeyboardAwareScrollView>
       </Animated.View>

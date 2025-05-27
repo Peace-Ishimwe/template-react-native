@@ -31,10 +31,9 @@ export default function HomeScreen() {
     queryKey: ["expenses", user?.id],
     queryFn: () => getExpenses(),
     enabled: !!user,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Calculate metrics
   const totalExpenses = expenses.reduce(
     (sum, expense) => sum + parseFloat(expense.amount),
     0
@@ -42,9 +41,8 @@ export default function HomeScreen() {
   const monthlyBudget = 10000;
   const budgetStatus =
     totalExpenses <= monthlyBudget ? "On Track" : "Over Budget";
-  const budgetColor = totalExpenses <= monthlyBudget ? "#22C55E" : "#EF4444";
+  const budgetColor = totalExpenses <= monthlyBudget ? "#1DB954" : "#FF453A";
 
-  // Category breakdown
   const categoryBreakdown = expenses.reduce((acc, expense) => {
     const category = expense.category || "Other";
     acc[category] = (acc[category] || 0) + parseFloat(expense.amount);
@@ -55,15 +53,14 @@ export default function HomeScreen() {
     ([name, value], index) => ({
       name,
       amount: value,
-      color: ["#3B82F6", "#22C55E", "#EF4444", "#F59E0B", "#8B5CF6", "#EC4899"][
+      color: ["#1DB954", "#3B82F6", "#FF453A", "#F59E0B", "#8B5CF6", "#EC4899"][
         index % 6
       ],
-      legendFontColor: "#374151",
+      legendFontColor: "#B3B3B3",
       legendFontSize: 12,
     })
   );
 
-  // Recent expenses (last 5, sorted by date or createdAt)
   const recentExpenses = [...expenses]
     .sort(
       (a, b) =>
@@ -72,13 +69,21 @@ export default function HomeScreen() {
     )
     .slice(0, 5);
 
+  // Dummy data for Savings Goal
+  const savingsGoal = 5000;
+  const currentSavings = 3200;
+  const savingsProgress = (currentSavings / savingsGoal) * 100;
+
   return (
-    <View className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" />
-      {/* Header with Gradient */}
+    <View className="flex-1 bg-[#121212]">
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
+
+      {/* Header */}
       <LinearGradient
-        colors={["#3B82F6", "#1E3A8A"]}
-        className="h-1/4 rounded-b-3xl justify-center items-center"
+        colors={["#1DB954", "#121212"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="h-1/4 justify-center items-center"
       >
         <Animated.View
           entering={FadeInUp.duration(500)}
@@ -91,91 +96,193 @@ export default function HomeScreen() {
             {user?.username || "User"}!
           </Text>
         </Animated.View>
-        <Text className="text-white text-lg mt-2 opacity-80">
+         <Text className="text-white text-lg mt-2 opacity-80">
           Manage Your Finances with Ease
         </Text>
       </LinearGradient>
 
       {/* Main Content */}
-      <ScrollView className="flex-1 px-6 -mt-8">
+      <ScrollView
+        className="px-4 -mt-8"
+        contentContainerStyle={{ paddingBottom: 80 }}
+      >
         {isLoading ? (
           <View className="flex-1 justify-center items-center mt-12">
-            <Text className="text-white text-lg">Loading dashboard...</Text>
+            <Text
+              className="text-white text-lg"
+              style={{ fontFamily: "CircularStd-Book" }}
+            >
+              Loading dashboard...
+            </Text>
           </View>
         ) : error ? (
           <View className="flex-1 justify-center items-center mt-4">
-            <Text className="text-white text-lg">Error loading data.</Text>
+            <Text
+              className="text-white text-lg"
+              style={{ fontFamily: "CircularStd-Book" }}
+            >
+              Error loading data.
+            </Text>
           </View>
         ) : (
-          <>
-            {/* Total Expenses Card */}
-            <Animated.View
-              entering={FadeInDown.duration(600).delay(200)}
-              className="mb-6"
-            >
-              <View className="bg-white rounded-xl p-4 shadow-md flex-row justify-between">
-                <View>
-                  <Text className="text-gray-600 text-sm">Total Expenses</Text>
-                  <Text className="text-blue-500 text-2xl font-bold">
-                    ${totalExpenses.toFixed(2)}
-                  </Text>
+          <View className="flex-1">
+            {/* Grid Layout for Cards */}
+            <View className="flex-row flex-wrap justify-between">
+              {/* Total Expenses Card */}
+              <Animated.View
+                entering={FadeInDown.duration(400).delay(200)}
+                className="w-[48%] mb-4"
+              >
+                <View className="bg-[#1E1E1E] rounded-2xl p-4 shadow-md">
+                  <View className="flex-row justify-between items-center">
+                    <View>
+                      <Text
+                        className="text-[#B3B3B3] text-sm mb-1"
+                        style={{ fontFamily: "CircularStd-Book" }}
+                      >
+                        Total Expenses
+                      </Text>
+                      <Text
+                        className="text-white text-2xl font-bold"
+                        style={{ fontFamily: "CircularStd-Medium" }}
+                      >
+                        ${totalExpenses.toFixed(2)}
+                      </Text>
+                    </View>
+                    <FontAwesome name="dollar" size={24} color="#1DB954" />
+                  </View>
                 </View>
-                <FontAwesome name="dollar" size={24} color="#3B82F6" />
-              </View>
-            </Animated.View>
+              </Animated.View>
 
-            {/* Budget Status Card */}
-            <Animated.View
-              entering={FadeInDown.duration(600).delay(400)}
-              className="mb-6"
-            >
-              <View className="bg-white rounded-xl p-4 shadow-md flex-row justify-between">
-                <View>
-                  <Text className="text-gray-600 text-sm">Budget Status</Text>
+              {/* Budget Status Card */}
+              <Animated.View
+                entering={FadeInDown.duration(400).delay(400)}
+                className="w-[48%] mb-4"
+              >
+                <View className="bg-[#1E1E1E] rounded-2xl p-4 shadow-md">
+                  <View className="flex-row justify-between items-center">
+                    <View>
+                      <Text
+                        className="text-[#B3B3B3] text-sm mb-1"
+                        style={{ fontFamily: "CircularStd-Book" }}
+                      >
+                        Budget Status
+                      </Text>
+                      <Text
+                        className={cn(
+                          "text-2xl font-bold",
+                          totalExpenses <= monthlyBudget
+                            ? "text-[#1DB954]"
+                            : "text-[#FF453A]"
+                        )}
+                        style={{ fontFamily: "CircularStd-Medium" }}
+                      >
+                        {budgetStatus}
+                      </Text>
+                      <Text
+                        className="text-[#B3B3B3] text-xs mt-1"
+                        style={{ fontFamily: "CircularStd-Book" }}
+                      >
+                        ${totalExpenses.toFixed(2)} / $
+                        {monthlyBudget.toFixed(2)}
+                      </Text>
+                    </View>
+                    <FontAwesome
+                      name={
+                        totalExpenses <= monthlyBudget
+                          ? "check-circle"
+                          : "exclamation-circle"
+                      }
+                      size={24}
+                      color={budgetColor}
+                    />
+                  </View>
+                </View>
+              </Animated.View>
+
+              {/* Savings Goal Card */}
+              <Animated.View
+                entering={FadeInDown.duration(400).delay(600)}
+                className="w-[48%] mb-4"
+              >
+                <View className="bg-[#1E1E1E] rounded-2xl p-4 shadow-md">
+                  <View className="flex-row justify-between items-center">
+                    <View>
+                      <Text
+                        className="text-[#B3B3B3] text-sm mb-1"
+                        style={{ fontFamily: "CircularStd-Book" }}
+                      >
+                        Savings Goal
+                      </Text>
+                      <Text
+                        className="text-white text-2xl font-bold"
+                        style={{ fontFamily: "CircularStd-Medium" }}
+                      >
+                        ${currentSavings.toFixed(2)}
+                      </Text>
+                      <Text
+                        className="text-[#B3B3B3] text-xs mt-1"
+                        style={{ fontFamily: "CircularStd-Book" }}
+                      >
+                        {savingsProgress.toFixed(0)}% of $
+                        {savingsGoal.toFixed(2)}
+                      </Text>
+                    </View>
+                    <FontAwesome name="bank" size={24} color="#1DB954" />
+                  </View>
+                  <View className="bg-[#2A2A2A] h-2 rounded-full mt-2">
+                    <View
+                      className="bg-[#1DB954] h-2 rounded-full"
+                      style={{ width: `${savingsProgress}%` }}
+                    />
+                  </View>
+                </View>
+              </Animated.View>
+
+              {/* Placeholder Card (Dummy Tip) */}
+              <Animated.View
+                entering={FadeInDown.duration(400).delay(800)}
+                className="w-[48%] mb-4"
+              >
+                <View className="bg-[#1E1E1E] rounded-2xl p-4 shadow-md">
                   <Text
-                    className={cn(
-                      "text-2xl font-bold",
-                      totalExpenses <= monthlyBudget
-                        ? "text-green-500"
-                        : "text-red-500"
-                    )}
+                    className="text-[#B3B3B3] text-sm mb-1"
+                    style={{ fontFamily: "CircularStd-Book" }}
                   >
-                    {budgetStatus}
+                    Finance Tip
                   </Text>
-                  <Text className="text-gray-500 text-xs">
-                    ${totalExpenses.toFixed(2)} / ${monthlyBudget.toFixed(2)}
+                  <Text
+                    className="text-white text-base"
+                    style={{ fontFamily: "CircularStd-Medium" }}
+                  >
+                    Save 20% of your income each month to build a strong
+                    financial cushion.
                   </Text>
                 </View>
-                <FontAwesome
-                  name={
-                    totalExpenses <= monthlyBudget
-                      ? "check-circle"
-                      : "exclamation-circle"
-                  }
-                  size={24}
-                  color={budgetColor}
-                />
-              </View>
-            </Animated.View>
+              </Animated.View>
+            </View>
 
-            {/* Category Breakdown Card */}
+            {/* Category Pie Chart */}
             <Animated.View
-              entering={FadeInDown.duration(600).delay(600)}
+              entering={FadeInDown.duration(400).delay(1000)}
               className="mb-6"
             >
-              <View className="bg-white rounded-xl p-4 shadow-md">
-                <Text className="text-gray-600 text-sm mb-2">
+              <View className="bg-[#1E1E1E] rounded-2xl p-5 shadow-md">
+                <Text
+                  className="text-[#B3B3B3] text-sm mb-3"
+                  style={{ fontFamily: "CircularStd-Book" }}
+                >
                   Expenses by Category
                 </Text>
                 {pieChartData.length > 0 ? (
                   <PieChart
                     data={pieChartData}
-                    width={screenWidth - 48} // Adjust for padding
+                    width={screenWidth - 32}
                     height={220}
                     chartConfig={{
-                      color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
+                      color: (opacity = 1) => `rgba(29, 185, 84, ${opacity})`,
                       labelColor: (opacity = 1) =>
-                        `rgba(55, 65, 81, ${opacity})`,
+                        `rgba(179, 179, 179, ${opacity})`,
                     }}
                     accessor="amount"
                     backgroundColor="transparent"
@@ -183,27 +290,33 @@ export default function HomeScreen() {
                     absolute
                   />
                 ) : (
-                  <Text className="text-gray-500 text-sm">
+                  <Text
+                    className="text-[#B3B3B3] text-sm"
+                    style={{ fontFamily: "CircularStd-Book" }}
+                  >
                     No category data available.
                   </Text>
                 )}
               </View>
             </Animated.View>
 
-            {/* Recent Expenses Card */}
+            {/* Recent Expenses */}
             <Animated.View
-              entering={FadeInDown.duration(600).delay(800)}
+              entering={FadeInDown.duration(400).delay(1200)}
               className="mb-6"
             >
-              <View className="bg-white rounded-xl p-4 shadow-md">
-                <Text className="text-gray-600 text-sm mb-2">
+              <View className="bg-[#1E1E1E] rounded-2xl p-5 shadow-md">
+                <Text
+                  className="text-[#B3B3B3] text-sm mb-3"
+                  style={{ fontFamily: "CircularStd-Book" }}
+                >
                   Recent Expenses
                 </Text>
                 {recentExpenses.length > 0 ? (
                   recentExpenses.map((expense) => (
                     <TouchableOpacity
                       key={expense.id}
-                      className="flex-row justify-between py-2 border-b border-gray-200"
+                      className="flex-row justify-between py-3 border-b border-[#2A2A2A]"
                       onPress={() =>
                         router.push({
                           pathname: "/(tabs)/expense-detail",
@@ -212,41 +325,53 @@ export default function HomeScreen() {
                       }
                     >
                       <View>
-                        <Text className="text-gray-800 text-base">
+                        <Text
+                          className="text-white font-medium"
+                          style={{ fontFamily: "CircularStd-Medium" }}
+                        >
                           {expense.name}
                         </Text>
-                        <Text className="text-gray-500 text-xs">
+                        <Text
+                          className="text-[#B3B3B3] text-xs"
+                          style={{ fontFamily: "CircularStd-Book" }}
+                        >
                           {expense.date
                             ? new Date(expense.date).toLocaleDateString()
                             : new Date(expense.createdAt).toLocaleDateString()}
                         </Text>
                       </View>
-                      <Text className="text-blue-500 text-base">
+                      <Text
+                        className="text-[#1DB954] font-medium"
+                        style={{ fontFamily: "CircularStd-Medium" }}
+                      >
                         ${parseFloat(expense.amount).toFixed(2)}
                       </Text>
                     </TouchableOpacity>
                   ))
                 ) : (
-                  <Text className="text-gray-500 text-sm">
+                  <Text
+                    className="text-[#B3B3B3] text-sm"
+                    style={{ fontFamily: "CircularStd-Book" }}
+                  >
                     No recent expenses.
                   </Text>
                 )}
               </View>
             </Animated.View>
-          </>
+          </View>
         )}
       </ScrollView>
 
-      {/* Floating Action Button (FAB) */}
+      {/* Floating Add Button */}
       <Animated.View
-        entering={FadeInDown.duration(600).delay(1200)}
+        entering={FadeInDown.duration(400).delay(1400)}
         className="absolute bottom-6 right-6"
       >
         <Link href="/(tabs)/create-expense" asChild>
           <TouchableOpacity
             className={cn(
-              "bg-blue-500 w-16 h-16 rounded-full justify-center items-center shadow-lg",
-              "active:scale-90 transition-all duration-200"
+              "bg-[#1DB954] w-16 h-16 rounded-full justify-center items-center shadow-2xl",
+              "active:scale-95 transition-transform"
             )}
           >
             <FontAwesome name="plus" size={24} color="#fff" />

@@ -1,10 +1,9 @@
 import React from 'react';
-import { View, Text, Alert, StatusBar } from 'react-native';
+import { View, Text, Alert, StatusBar, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/src/components/Button';
 import { cn } from '@/src/utils/cn';
 import { getExpenseById, deleteExpense } from '@/src/services/api';
 import { Expense } from '@/src/types';
@@ -41,65 +40,87 @@ export default function ExpenseDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-gray-900 justify-center items-center">
-        <Text className="text-white">Loading...</Text>
+      <View className="flex-1 bg-[#121212] justify-center items-center">
+        <Text className="text-white text-lg" style={{ fontFamily: 'CircularStd-Book' }}>
+          Loading...
+        </Text>
       </View>
     );
   }
 
   if (error || !expense) {
     return (
-      <View className="flex-1 bg-gray-900 justify-center items-center">
-        <Text className="text-white">Expense not found.</Text>
+      <View className="flex-1 bg-[#121212] justify-center items-center">
+        <Text className="text-white text-lg" style={{ fontFamily: 'CircularStd-Book' }}>
+          Expense not found.
+        </Text>
       </View>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" />
+    <View className="flex-1 bg-[#121212]">
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
       <LinearGradient
-        colors={['#3B82F6', '#1E3A8A']}
-        className="h-1/4 rounded-b-3xl justify-center items-center p-4"
+        colors={['#1DB954', '#121212']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="h-1/4 justify-center items-center p-4"
       >
         <Animated.Text
-          entering={FadeInUp.duration(300)}
-          className="text-white text-3xl font-bold text-center"
+          entering={FadeInUp.duration(400)}
+          className="text-white text-4xl font-bold text-center"
+          style={{ fontFamily: 'CircularStd-Black' }}
         >
           Expense Details
         </Animated.Text>
       </LinearGradient>
 
       <Animated.View
-        entering={FadeInDown.duration(300).delay(200)}
+        entering={FadeInDown.duration(400).delay(200)}
         className="flex-1 px-6 -mt-8"
       >
-        <View className="bg-white rounded-xl p-6 shadow-md">
-          <Text className="text-gray-800 text-lg font-semibold mb-2">{expense.name}</Text>
-          <Text className="text-blue-500 text-base mb-2">${parseFloat(expense.amount).toFixed(2)}</Text>
-          <Text className="text-gray-600 text-sm mb-2">Description: {expense.description}</Text>
+        <View className="bg-[#1E1E1E] rounded-2xl p-6 shadow-md">
+          <Text className="text-white text-lg font-semibold mb-2" style={{ fontFamily: 'CircularStd-Medium' }}>
+            {expense.name}
+          </Text>
+          <Text className="text-[#1DB954] text-base mb-2" style={{ fontFamily: 'CircularStd-Medium' }}>
+            ${parseFloat(expense.amount).toFixed(2)}
+          </Text>
+          <Text className="text-[#B3B3B3] text-sm mb-2" style={{ fontFamily: 'CircularStd-Book' }}>
+            Description: {expense.description}
+          </Text>
           {expense.category && (
-            <Text className="text-gray-600 text-sm mb-2">Category: {expense.category}</Text>
+            <Text className="text-[#B3B3B3] text-sm mb-2" style={{ fontFamily: 'CircularStd-Book' }}>
+              Category: {expense.category}
+            </Text>
           )}
-          <Text className="text-gray-600 text-sm mb-2">
+          <Text className="text-[#B3B3B3] text-sm mb-2" style={{ fontFamily: 'CircularStd-Book' }}>
             Date: {expense.date ? new Date(expense.date).toLocaleDateString() : new Date(expense.createdAt).toLocaleDateString()}
           </Text>
           {expense.title && (
-            <Text className="text-gray-600 text-sm mb-2">Title: {expense.title}</Text>
+            <Text className="text-[#B3B3B3] text-sm mb-2" style={{ fontFamily: 'CircularStd-Book' }}>
+              Title: {expense.title}
+            </Text>
           )}
           {expense.note && (
-            <Text className="text-gray-600 text-sm mb-2">Note: {expense.note}</Text>
+            <Text className="text-[#B3B3B3] text-sm mb-2" style={{ fontFamily: 'CircularStd-Book' }}>
+              Note: {expense.note}
+            </Text>
           )}
-          <Button
-            title="Delete Expense"
+          <TouchableOpacity
             onPress={handleDelete}
             disabled={mutation.isPending}
             className={cn(
-              'bg-red-500 mt-4',
+              'bg-[#FF453A] rounded-full py-3 mt-4',
               'transition-all duration-200 active:scale-95',
               mutation.isPending && 'opacity-50'
             )}
-          />
+          >
+            <Text className="text-white text-center text-lg font-semibold" style={{ fontFamily: 'CircularStd-Medium' }}>
+              Delete Expense
+            </Text>
+          </TouchableOpacity>
         </View>
       </Animated.View>
     </View>

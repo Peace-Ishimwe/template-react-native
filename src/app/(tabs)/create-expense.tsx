@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, Alert, StatusBar } from 'react-native';
+import { View, Text, Alert, StatusBar, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/src/components/Input';
-import { Button } from '@/src/components/Button';
 import { cn } from '@/src/utils/cn';
 import { createExpense } from '@/src/services/api';
 import { Picker } from '@react-native-picker/picker';
@@ -178,26 +177,29 @@ export default function CreateExpenseScreen() {
   };
 
   return (
-    <View className="flex-1 bg-gray-900">
-      <StatusBar barStyle="light-content" />
+    <View className="flex-1 bg-[#121212]">
+      <StatusBar barStyle="light-content" backgroundColor="#121212" />
       <LinearGradient
-        colors={['#3B82F6', '#1E3A8A']}
-        className="h-1/5 rounded-b-3xl justify-center items-center p-4"
+        colors={['#1DB954', '#121212']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        className="h-1/4 justify-center items-center p-4"
       >
         <Animated.Text
-          entering={FadeInUp.duration(300)}
-          className="text-white text-3xl font-bold text-center"
+          entering={FadeInUp.duration(400)}
+          className="text-white text-4xl font-bold text-center"
+          style={{ fontFamily: 'CircularStd-Black' }}
         >
           Add New Expense
         </Animated.Text>
       </LinearGradient>
 
       <Animated.View
-        entering={FadeInDown.duration(300).delay(200)}
+        entering={FadeInDown.duration(400).delay(200)}
         className="flex-1 px-6 -mt-8 pb-4"
       >
         <KeyboardAwareScrollView
-          className="bg-white rounded-xl p-6 shadow-md"
+          className="bg-[#1E1E1E] rounded-2xl p-6 shadow-md"
           contentContainerStyle={{
             flexGrow: 1,
             paddingBottom: 40,
@@ -206,104 +208,122 @@ export default function CreateExpenseScreen() {
           extraScrollHeight={30}
           keyboardShouldPersistTaps="handled"
         >
-          <View>
+          <View className="mb-4">
             <Input
               label="Name"
               value={expense.name}
               onChangeText={(text: string) => setExpense({ ...expense, name: text })}
               placeholder="Enter expense name"
+              placeholderTextColor="#B3B3B3"
               editable={!mutation.isPending}
-              className={cn('text-base', mutation.isPending && 'opacity-70')}
+              className={cn('text-base text-white bg-[#2A2A2A] rounded-lg p-3', mutation.isPending && 'opacity-70')}
+              style={{ fontFamily: 'CircularStd-Book' }}
             />
-            {errors.name ? <Text className="text-red-500 text-xs mt-1">{errors.name}</Text> : null}
+            {errors.name ? <Text className="text-[#FF453A] text-xs mt-1" style={{ fontFamily: 'CircularStd-Book' }}>{errors.name}</Text> : null}
           </View>
-          <View>
+          <View className="mb-4">
             <Input
               label="Amount"
               value={expense.amount}
               onChangeText={(text: string) => setExpense({ ...expense, amount: text })}
               placeholder="Enter amount"
+              placeholderTextColor="#B3B3B3"
               keyboardType="numeric"
               editable={!mutation.isPending}
-              className={cn('text-base', mutation.isPending && 'opacity-70')}
+              className={cn('text-base text-white bg-[#2A2A2A] rounded-lg p-3', mutation.isPending && 'opacity-70')}
+              style={{ fontFamily: 'CircularStd-Book' }}
             />
-            {errors.amount ? <Text className="text-red-500 text-xs mt-1">{errors.amount}</Text> : null}
+            {errors.amount ? <Text className="text-[#FF453A] text-xs mt-1" style={{ fontFamily: 'CircularStd-Book' }}>{errors.amount}</Text> : null}
           </View>
-          <View>
+          <View className="mb-4">
             <Input
               label="Description"
               value={expense.description}
               onChangeText={(text: string) => setExpense({ ...expense, description: text })}
               placeholder="Enter description"
+              placeholderTextColor="#B3B3B3"
               editable={!mutation.isPending}
-              className={cn('text-base', mutation.isPending && 'opacity-70')}
+              className={cn('text-base text-white bg-[#2A2A2A] rounded-lg p-3', mutation.isPending && 'opacity-70')}
+              style={{ fontFamily: 'CircularStd-Book' }}
             />
-            {errors.description ? <Text className="text-red-500 text-xs mt-1">{errors.description}</Text> : null}
+            {errors.description ? <Text className="text-[#FF453A] text-xs mt-1" style={{ fontFamily: 'CircularStd-Book' }}>{errors.description}</Text> : null}
           </View>
           <View className="mb-4">
-            <Text className="text-gray-600 text-sm mb-2">Category</Text>
-            <Picker
-              selectedValue={expense.category}
-              onValueChange={(value: string) => setExpense({ ...expense, category: value })}
-              enabled={!mutation.isPending}
-              style={{ backgroundColor: '#F3F4F6', borderRadius: 8 }}
-            >
-              <Picker.Item label="Select a category" value="" />
-              {categories.map((cat) => (
-                <Picker.Item key={cat} label={cat} value={cat} />
-              ))}
-            </Picker>
-            {errors.category ? <Text className="text-red-500 text-xs mt-1">{errors.category}</Text> : null}
+            <Text className="text-[#B3B3B3] text-sm mb-2" style={{ fontFamily: 'CircularStd-Book' }}>Category</Text>
+            <View className="bg-[#2A2A2A] rounded-lg">
+              <Picker
+                selectedValue={expense.category}
+                onValueChange={(value: string) => setExpense({ ...expense, category: value })}
+                enabled={!mutation.isPending}
+                style={{ color: '#FFFFFF', fontFamily: 'CircularStd-Book' }}
+              >
+                <Picker.Item label="Select a category" value="" />
+                {categories.map((cat) => (
+                  <Picker.Item key={cat} label={cat} value={cat} />
+                ))}
+              </Picker>
+            </View>
+            {errors.category ? <Text className="text-[#FF453A] text-xs mt-1" style={{ fontFamily: 'CircularStd-Book' }}>{errors.category}</Text> : null}
           </View>
           <View className="mb-4">
-            <Text className="text-gray-600 text-sm mb-2">Date</Text>
-            <Button
-              title={expense.date ? new Date(expense.date).toLocaleDateString() : 'Select Date'}
+            <Text className="text-[#B3B3B3] text-sm mb-2" style={{ fontFamily: 'CircularStd-Book' }}>Date</Text>
+            <TouchableOpacity
               onPress={() => setIsDatePickerVisible(true)}
               disabled={mutation.isPending}
-              className={cn('bg-gray-200', mutation.isPending && 'opacity-50')}
-            />
+              className={cn('bg-[#2A2A2A] rounded-lg p-3', mutation.isPending && 'opacity-50')}
+            >
+              <Text className="text-white text-base" style={{ fontFamily: 'CircularStd-Book' }}>
+                {expense.date ? new Date(expense.date).toLocaleDateString() : 'Select Date'}
+              </Text>
+            </TouchableOpacity>
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
               mode="date"
               onConfirm={handleConfirmDate}
               onCancel={() => setIsDatePickerVisible(false)}
             />
-            {errors.date ? <Text className="text-red-500 text-xs mt-1">{errors.date}</Text> : null}
+            {errors.date ? <Text className="text-[#FF453A] text-xs mt-1" style={{ fontFamily: 'CircularStd-Book' }}>{errors.date}</Text> : null}
           </View>
-          <View>
+          <View className="mb-4">
             <Input
               label="Title (Optional)"
               value={expense.title}
               onChangeText={(text: string) => setExpense({ ...expense, title: text })}
               placeholder="Enter title"
+              placeholderTextColor="#B3B3B3"
               editable={!mutation.isPending}
-              className={cn('text-base', mutation.isPending && 'opacity-70')}
+              className={cn('text-base text-white bg-[#2A2A2A] rounded-lg p-3', mutation.isPending && 'opacity-70')}
+              style={{ fontFamily: 'CircularStd-Book' }}
             />
-            {errors.title ? <Text className="text-red-500 text-xs mt-1">{errors.title}</Text> : null}
+            {errors.title ? <Text className="text-[#FF453A] text-xs mt-1" style={{ fontFamily: 'CircularStd-Book' }}>{errors.title}</Text> : null}
           </View>
-          <View>
+          <View className="mb-4">
             <Input
               label="Note (Optional)"
               value={expense.note}
               onChangeText={(text: string) => setExpense({ ...expense, note: text })}
               placeholder="Enter note"
+              placeholderTextColor="#B3B3B3"
               multiline
               editable={!mutation.isPending}
-              className={cn('text-base', mutation.isPending && 'opacity-70')}
+              className={cn('text-base text-white bg-[#2A2A2A] rounded-lg p-3', mutation.isPending && 'opacity-70')}
+              style={{ fontFamily: 'CircularStd-Book' }}
             />
-            {errors.note ? <Text className="text-red-500 text-xs mt-1">{errors.note}</Text> : null}
+            {errors.note ? <Text className="text-[#FF453A] text-xs mt-1" style={{ fontFamily: 'CircularStd-Book' }}>{errors.note}</Text> : null}
           </View>
-          <Button
-            title="Create Expense"
+          <TouchableOpacity
             onPress={handleCreate}
             disabled={mutation.isPending}
             className={cn(
-              'bg-blue-500 mt-4',
+              'bg-[#1DB954] rounded-full py-3 mt-4',
               'transition-all duration-200 active:scale-95',
               mutation.isPending && 'opacity-50'
             )}
-          />
+          >
+            <Text className="text-white text-center text-lg font-semibold" style={{ fontFamily: 'CircularStd-Medium' }}>
+              Create Expense
+            </Text>
+          </TouchableOpacity>
         </KeyboardAwareScrollView>
       </Animated.View>
     </View>
