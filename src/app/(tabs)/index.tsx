@@ -118,7 +118,7 @@ export default function HomeScreen() {
         end={{ x: 0, y: 1 }}
         className="h-1/4 justify-center items-center"
       >
-       <Animated.View
+        <Animated.View
           entering={FadeInUp.duration(500)}
           className="flex flex-col items-center"
         >
@@ -180,6 +180,13 @@ export default function HomeScreen() {
                         style={{ fontFamily: "CircularStd-Medium" }}
                       >
                         ${totalExpenses.toFixed(2)}
+                      </Text>
+                      <Text
+                        className="text-[#B3B3B3] text-xs mt-1"
+                        style={{ fontFamily: "CircularStd-Book" }}
+                      >
+                        {expenses.length}{" "}
+                        {expenses.length === 1 ? "expense" : "expenses"}
                       </Text>
                     </View>
                     <FontAwesome name="dollar" size={24} color="#1DB954" />
