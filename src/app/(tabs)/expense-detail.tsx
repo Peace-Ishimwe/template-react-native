@@ -1,48 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, Alert, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/src/components/Button';
 import { cn } from '@/src/utils/cn';
 import { getExpenseById, deleteExpense } from '@/src/services/api';
 import { Expense } from '@/src/types';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function ExpenseDetailScreen() {
-  const [expense, setExpense] = useState<Expense | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchExpense = async () => {
-      if (!id) return;
-      setIsLoading(true);
-      try {
-        const data = await getExpenseById(id);
-        setExpense(data);
-      } catch (error) {
-        console.error('Error fetching expense:', error);
-        Alert.alert('Error', 'Failed to load expense details');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchExpense();
-  }, [id]);
+  const { data: expense, isLoading, error } = useQuery({
+    queryKey: ['expense', id],
+    queryFn: () => getExpenseById(id!),
+    enabled: !!id && !!user,
+  });
 
-  const handleDelete = async () => {
-    if (!id) return;
-    setIsLoading(true);
-    try {
-      await deleteExpense(id);
+  const mutation = useMutation({
+    mutationFn: deleteExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses', user?.id] });
       Alert.alert('Success', 'Expense deleted successfully!');
       router.push('/(tabs)/expenses');
-    } catch (error: any) {
+    },
+    onError: (error: any) => {
       Alert.alert('Error', error.message || 'Failed to delete expense');
-    } finally {
-      setIsLoading(false);
-    }
+    },
+  });
+
+  const handleDelete = () => {
+    if (!id) return;
+    mutation.mutate(id);
   };
 
   if (isLoading) {
@@ -53,7 +47,7 @@ export default function ExpenseDetailScreen() {
     );
   }
 
-  if (!expense) {
+  if (error || !expense) {
     return (
       <View className="flex-1 bg-gray-900 justify-center items-center">
         <Text className="text-white">Expense not found.</Text>
@@ -99,11 +93,11 @@ export default function ExpenseDetailScreen() {
           <Button
             title="Delete Expense"
             onPress={handleDelete}
-            disabled={isLoading}
+            disabled={mutation.isPending}
             className={cn(
               'bg-red-500 mt-4',
               'transition-all duration-200 active:scale-95',
-              isLoading && 'opacity-50'
+              mutation.isPending && 'opacity-50'
             )}
           />
         </View>

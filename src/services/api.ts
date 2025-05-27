@@ -49,16 +49,11 @@ export const createExpense = async (expense: Omit<Expense, 'id' | 'createdAt'>):
 export const getExpenses = async (): Promise<Expense[]> => {
   const user = await getStoredUser();
   const response = await api.get<Expense[]>(`/expenses`);
-  return response.data;
+  return response.data.filter(expense => expense.userId === user?.id);
 };
 
 export const getExpenseById = async (id: string): Promise<Expense> => {
   const response = await api.get<Expense>(`/expenses/${id}`);
-  return response.data;
-};
-
-export const updateExpense = async (id: string, expense: any): Promise<Expense> => {
-  const response = await api.put<Expense>(`/expenses/${id}`, expense);
   return response.data;
 };
 

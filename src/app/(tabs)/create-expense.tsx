@@ -3,6 +3,7 @@ import { View, Text, Alert, ScrollView, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/src/components/Input';
 import { Button } from '@/src/components/Button';
 import { cn } from '@/src/utils/cn';
@@ -21,19 +22,31 @@ export default function CreateExpenseScreen() {
     title: '',
     note: '',
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const router = useRouter();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const categories = ['Food', 'Shopping', 'Entertainment', 'Clothes', 'Housing', 'Other'];
+
+  const mutation = useMutation({
+    mutationFn: createExpense,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses', user?.id] });
+      Alert.alert('Success', 'Expense created successfully!');
+      router.push('/(tabs)/expenses');
+    },
+    onError: (error: any) => {
+      Alert.alert('Error', error.message || 'Failed to create expense');
+    },
+  });
 
   const handleConfirmDate = (date: Date) => {
     setExpense({ ...expense, date: date.toISOString() });
     setIsDatePickerVisible(false);
   };
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!user) {
       Alert.alert('Error', 'You must be logged in to create an expense');
       return;
@@ -49,24 +62,15 @@ export default function CreateExpenseScreen() {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      await createExpense({
-        name: expense.name,
-        amount: expense.amount,
-        description: expense.description,
-        category: expense.category || undefined,
-        date: expense.date || undefined,
-        title: expense.title || undefined,
-        note: expense.note || undefined,
-      });
-      Alert.alert('Success', 'Expense created successfully!');
-      router.push('/(tabs)/expenses');
-    } catch (error: any) {
-      Alert.alert('Error', error.message || 'Failed to create expense');
-    } finally {
-      setIsLoading(false);
-    }
+    mutation.mutate({
+      name: expense.name,
+      amount: expense.amount,
+      description: expense.description,
+      category: expense.category || undefined,
+      date: expense.date || undefined,
+      title: expense.title || undefined,
+      note: expense.note || undefined,
+    });
   };
 
   return (
@@ -86,7 +90,7 @@ export default function CreateExpenseScreen() {
 
       <Animated.View
         entering={FadeInDown.duration(300).delay(200)}
-        className="flex-1 px-6 -mt-8 pb-5"
+        className="flex-1 px-6 -mt-8 pb-6"
       >
         <ScrollView className="bg-white rounded-xl p-6 shadow-md">
           <Input
@@ -94,8 +98,8 @@ export default function CreateExpenseScreen() {
             value={expense.name}
             onChangeText={(text) => setExpense({ ...expense, name: text })}
             placeholder="Enter expense name"
-            editable={!isLoading}
-            className={cn('text-base', isLoading && 'opacity-70')}
+            editable={!mutation.isPending}
+            className={cn('text-base', mutation.isPending && 'opacity-70')}
           />
           <Input
             label="Amount"
@@ -103,23 +107,23 @@ export default function CreateExpenseScreen() {
             onChangeText={(text) => setExpense({ ...expense, amount: text })}
             placeholder="Enter amount"
             keyboardType="numeric"
-            editable={!isLoading}
-            className={cn('text-base', isLoading && 'opacity-70')}
+            editable={!mutation.isPending}
+            className={cn('text-base', mutation.isPending && 'opacity-70')}
           />
           <Input
             label="Description"
             value={expense.description}
             onChangeText={(text) => setExpense({ ...expense, description: text })}
             placeholder="Enter description"
-            editable={!isLoading}
-            className={cn('text-base', isLoading && 'opacity-70')}
+            editable={!mutation.isPending}
+            className={cn('text-base', mutation.isPending && 'opacity-70')}
           />
           <View className="mb-4">
             <Text className="text-gray-600 text-sm mb-2">Category</Text>
             <Picker
               selectedValue={expense.category}
               onValueChange={(value) => setExpense({ ...expense, category: value })}
-              enabled={!isLoading}
+              enabled={!mutation.isPending}
               style={{ backgroundColor: '#F3F4F6', borderRadius: 8 }}
             >
               <Picker.Item label="Select a category" value="" />
@@ -133,8 +137,8 @@ export default function CreateExpenseScreen() {
             <Button
               title={expense.date ? new Date(expense.date).toLocaleDateString() : 'Select Date'}
               onPress={() => setIsDatePickerVisible(true)}
-              disabled={isLoading}
-              className={cn('bg-gray-200', isLoading && 'opacity-50')}
+              disabled={mutation.isPending}
+              className={cn('bg-gray-200', mutation.isPending && 'opacity-50')}
             />
             <DateTimePickerModal
               isVisible={isDatePickerVisible}
@@ -148,8 +152,8 @@ export default function CreateExpenseScreen() {
             value={expense.title}
             onChangeText={(text) => setExpense({ ...expense, title: text })}
             placeholder="Enter title"
-            editable={!isLoading}
-            className={cn('text-base', isLoading && 'opacity-70')}
+            editable={!mutation.isPending}
+            className={cn('text-base', mutation.isPending && 'opacity-70')}
           />
           <Input
             label="Note (Optional)"
@@ -157,17 +161,17 @@ export default function CreateExpenseScreen() {
             onChangeText={(text) => setExpense({ ...expense, note: text })}
             placeholder="Enter note"
             multiline
-            editable={!isLoading}
-            className={cn('text-base', isLoading && 'opacity-70')}
+            editable={!mutation.isPending}
+            className={cn('text-base', mutation.isPending && 'opacity-70')}
           />
           <Button
             title="Create Expense"
             onPress={handleCreate}
-            disabled={isLoading}
+            disabled={mutation.isPending}
             className={cn(
               'bg-blue-500 mt-4',
               'transition-all duration-200 active:scale-95',
-              isLoading && 'opacity-50'
+              mutation.isPending && 'opacity-50'
             )}
           />
         </ScrollView>

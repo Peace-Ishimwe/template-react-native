@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import "../../global.css";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider } from "../contexts/AuthContext";
+import ReactQueryProvider from "../contexts/react-query-provider";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -49,12 +50,17 @@ export default function RootLayout() {
 function RootLayoutNav() {
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <Stack initialRouteName="(tabs)" screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="auth" />
-          <Stack.Screen name="(tabs)" />
-        </Stack>
-      </AuthProvider>
+      <ReactQueryProvider>
+        <AuthProvider>
+          <Stack
+            initialRouteName="(tabs)"
+            screenOptions={{ headerShown: false }}
+          >
+            <Stack.Screen name="auth" />
+            <Stack.Screen name="(tabs)" />
+          </Stack>
+        </AuthProvider>
+      </ReactQueryProvider>
     </SafeAreaProvider>
   );
 }

@@ -1,33 +1,23 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StatusBar } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
+import { useQuery } from '@tanstack/react-query';
 import { getExpenses } from '@/src/services/api';
 import { Expense } from '@/src/types';
 import { useAuth } from '@/src/contexts/AuthContext';
+import { useRouter } from 'expo-router';
 
 export default function ExpensesScreen() {
-  const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
   const { user } = useAuth();
 
-  useEffect(() => {
-    const fetchExpenses = async () => {
-      if (!user) return;
-      setIsLoading(true);
-      try {
-        const data = await getExpenses();
-        setExpenses(data.filter(expense => expense.userId === user.id));
-      } catch (error) {
-        console.error('Error fetching expenses:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchExpenses();
-  }, [user]);
+  const { data: expenses = [], isLoading, error } = useQuery({
+    queryKey: ['expenses', user?.id],
+    queryFn: () => getExpenses(),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
 
   const renderExpense = ({ item }: { item: Expense }) => (
     <Animated.View entering={FadeInDown.duration(300).delay(100 * parseInt(item.id))}>
@@ -65,9 +55,17 @@ export default function ExpensesScreen() {
         className="flex-1 px-6 -mt-8"
       >
         {isLoading ? (
-          <Text className="text-white text-center mt-4">Loading...</Text>
+          <View className="flex-1 justify-center items-center mt-4">
+            <Text className="text-white text-lg">Loading expenses...</Text>
+          </View>
+        ) : error ? (
+          <View className="flex-1 justify-center items-center mt-4">
+            <Text className="text-white text-lg">Error loading expenses.</Text>
+          </View>
         ) : expenses.length === 0 ? (
-          <Text className="text-white text-center mt-4">No expenses found.</Text>
+          <View className="flex-1 justify-center items-center mt-4">
+            <Text className="text-white text-lg">No expenses found.</Text>
+          </View>
         ) : (
           <FlatList
             data={expenses}
