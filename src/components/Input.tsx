@@ -1,23 +1,16 @@
 import React from "react";
-import { TextInput, View, Text } from "react-native";
+import { TextInput, View, Text, TextInputProps } from "react-native";
 import { cn } from "../utils/cn";
 
-interface InputProps {
+interface InputProps extends TextInputProps {
   label: string;
-  value: string;
-  onChangeText: (text: string) => void;
-  placeholder?: string;
-  secureTextEntry?: boolean;
   className?: string;
 }
 
 export const Input: React.FC<InputProps> = ({
   label,
-  value,
-  onChangeText,
-  placeholder,
-  secureTextEntry,
   className,
+  ...rest
 }) => {
   return (
     <View className="mb-4">
@@ -27,11 +20,9 @@ export const Input: React.FC<InputProps> = ({
           "bg-gray-50 border border-gray-200 rounded-lg p-3 text-gray-800",
           className
         )}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
         placeholderTextColor="#9CA3AF"
-        secureTextEntry={secureTextEntry}
+        autoCapitalize="none"
+        {...rest}
       />
     </View>
   );

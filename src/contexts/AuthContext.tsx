@@ -1,6 +1,17 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { AuthContextType, User, LoginCredentials, SignupCredentials } from '../types/user';
-import { loginUser, signupUser, logoutUser, getStoredUser } from '../services/api';
+import { loginUser, getStoredUser, logoutUser } from '@/src/services/api';
+import { User } from '@/src/types';
+
+interface LoginCredentials {
+  username: string;
+  password: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  login: (credentials: LoginCredentials) => Promise<void>;
+  logout: () => Promise<void>;
+}
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -10,28 +21,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     const loadUser = async () => {
-      const storedUser = await getStoredUser();
-      setUser(storedUser);
-      setLoading(false);
+      try {
+        const storedUser = await getStoredUser();
+        setUser(storedUser);
+      } catch (error) {
+        console.error('Error loading user from storage:', error);
+      } finally {
+        setLoading(false);
+      }
     };
     loadUser();
   }, []);
 
   const login = async (credentials: LoginCredentials) => {
-    const user = await loginUser(credentials);
-    if (user) {
-      setUser(user);
-    } else {
-      throw new Error('Invalid email or password');
+    const { username, password } = credentials;
+    if (!username || !password) {
+      throw new Error('Please enter both username and password');
     }
-  };
 
-  const signup = async (credentials: SignupCredentials) => {
-    const user = await signupUser(credentials);
-    if (user) {
+    const users = await loginUser(username);
+    const user = users[0];
+
+    if (user && user.password === password) {
       setUser(user);
     } else {
-      throw new Error('Failed to create account');
+      throw new Error('Invalid username or password');
     }
   };
 
@@ -41,11 +55,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   if (loading) {
-    return null; // Or a loading spinner
+    return null; // Or replace with a loading spinner component
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

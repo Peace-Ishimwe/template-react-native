@@ -1,26 +1,35 @@
-import React, { useState } from "react";
-import { View, Text, Alert, StatusBar } from "react-native";
-import { Link, useRouter } from "expo-router";
-import { Input } from "../../components/Input";
-import { Button } from "../../components/Button";
-import { useAuth } from "../../contexts/AuthContext";
-import { LoginCredentials } from "../../types/user";
+import React, { useState } from 'react';
+import { View, Text, Alert, StatusBar } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Input } from '@/src/components/Input';
+import { Button } from '@/src/components/Button';
+import { loginUser } from '@/src/services/api';
 
 export default function LoginScreen() {
-  const [credentials, setCredentials] = useState<LoginCredentials>({
-    email: "",
-    password: "",
+  const [credentials, setCredentials] = useState<{ username: string; password: string }>({
+    username: '',
+    password: '',
   });
-  const { login } = useAuth();
   const router = useRouter();
 
   const handleLogin = async () => {
+    if (!credentials.username || !credentials.password) {
+      Alert.alert('Error', 'Please enter both username and password');
+      return;
+    }
+
     try {
-      await login(credentials);
-      Alert.alert("Success", "Logged in successfully!");
-      router.push("/(tabs)");
-    } catch (error: any) {
-      Alert.alert("Error", error.message || "Invalid email or password");
+      const users = await loginUser(credentials.username);
+      const user = users[0];
+
+      if (user && user.password === credentials.password) {
+        Alert.alert('Success', 'Logged in successfully!');
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('Error', 'Invalid username or password');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to login. Please try again.');
     }
   };
 
@@ -28,34 +37,22 @@ export default function LoginScreen() {
     <View className="flex-1 bg-gray-900 p-6 justify-center">
       <StatusBar />
       <Text className="text-white text-3xl font-bold text-center mb-8">
-        Welcome Back
+        Welcome to Personal Finance Tracker
       </Text>
       <Input
-        label="Email"
-        value={credentials.email}
-        onChangeText={(text) => setCredentials({ ...credentials, email: text })}
-        placeholder="Enter your email"
+        label="Username"
+        value={credentials.username}
+        onChangeText={(text) => setCredentials({ ...credentials, username: text })}
+        placeholder="Enter your username"
       />
       <Input
         label="Password"
         value={credentials.password}
-        onChangeText={(text) =>
-          setCredentials({ ...credentials, password: text })
-        }
+        onChangeText={(text) => setCredentials({ ...credentials, password: text })}
         placeholder="Enter your password"
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
-      <Link
-        href={{
-          pathname: "/auth/signup",
-        }}
-        asChild
-      >
-        <Text className="text-white text-center mt-4">
-          Don't have an account? <Text className="text-blue-400">Sign Up</Text>
-        </Text>
-      </Link>
     </View>
   );
 }
