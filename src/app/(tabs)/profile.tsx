@@ -61,11 +61,11 @@ export default function ProfileScreen() {
         colors={['#1DB954', '#121212']}
         start={{ x: 0, y: 0 }}
         end={{ x: 0, y: 1 }}
-        className="h-1/3 justify-center items-center"
+        className="h-1/4 justify-center items-center"
       >
         <Animated.View entering={FadeInUp.duration(400)} className="flex flex-col items-center">
           <View className="w-24 h-24 bg-[#2A2A2A] rounded-full justify-center items-center mb-4">
-            <FontAwesome name="user" size={48} color="#1DB954" />
+            <FontAwesome name="user" size={40} color="#1DB954" />
           </View>
           <Text className="text-white text-3xl font-bold" style={{ fontFamily: 'CircularStd-Black' }}>
             {user.username || 'User'}

@@ -14,32 +14,41 @@ export default function TabLayout() {
         screenOptions={{
           headerShown: false,
           tabBarStyle: {
-            backgroundColor: "#121212",
+            backgroundColor: "transparent",
             borderTopWidth: 0,
-            elevation: 8,
+            elevation: 10,
             shadowColor: "#000",
-            shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.15,
-            shadowRadius: 8,
-            height: 70,
-            paddingBottom: 10
+            shadowOffset: { width: 0, height: -4 },
+            shadowOpacity: 0.2,
+            shadowRadius: 10,
+            height: 80,
+            paddingBottom: 15,
+            paddingTop: 10,
+            position: "absolute",
+            bottom: 20,
+            left: 16,
+            right: 16,
+            borderRadius: 20,
+            marginHorizontal: 16,
           },
-          tabBarBackground: () => (
+         tabBarBackground: () => (
             <LinearGradient
-              colors={["rgba(18, 18, 18, 0.95)", "rgba(30, 30, 30, 0.95)"]}
+              colors={["#1E1E1E", "#2A2A2A"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
               style={{
                 flex: 1,
-                borderTopLeftRadius: 16,
-                borderTopRightRadius: 16,
+                borderRadius: 20,
+                overflow: "hidden",
               }}
             />
           ),
           tabBarActiveTintColor: "#1DB954",
           tabBarInactiveTintColor: "#B3B3B3",
           tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: "CircularStd-Medium",
-            marginBottom: 5,
+            fontSize: 11,
+            fontFamily: "CircularStd-Book",
+            marginTop: 2,
           },
         }}
       >
